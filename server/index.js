@@ -3,11 +3,11 @@ var path = require('path')
 const app = express()
 
 app.get("/", (req, res)=>{
-    res.sendFile(path.resolve(__dirname + "/../client/index.html"));
+    res.sendFile(path.resolve(__dirname + "/../client/main.html"));
 })
 
 app.get("/game", (req, res)=>{
-    res.sendFile(path.resolve(__dirname + "/../client/game.html"));
+    res.sendFile(path.resolve(__dirname + "/../client/room.html"));
 })
 
 app.listen(process.env.PORT || 3000, process.env.IP, function(){
