@@ -5,14 +5,14 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     </head>
     <body>
-        <form class="container" style="width: 30%; margin-top: 20%;" action="/game">
+        <form class="container" style="width: 30%; margin-top: 20%;" action="/game" method="POST">
             <div class="input-group flex-nowrap">
                 <span class="input-group-text" id="addon-wrapping">@</span>
-                <input type="text" class="form-control" placeholder="Nickname" aria-label="Nickname" aria-describedby="addon-wrapping">
+                <input type="text" name="username" class="form-control" placeholder="Nickname" aria-label="Nickname" aria-describedby="addon-wrapping">
             </div>
             <div class="input-group flex-nowrap">
                 <span class="input-group-text" id="addon-wrapping">#</span>
-                <input type="text" class="form-control" placeholder="Room Code" aria-label="Room code" aria-describedby="addon-wrapping">
+                <input type="text" name="room" class="form-control" placeholder="Room Code" aria-label="Room code" aria-describedby="addon-wrapping">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>

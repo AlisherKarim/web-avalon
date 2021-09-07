@@ -1,15 +1,22 @@
-const express = require('express')
-var path = require('path')
-const app = express()
+var express = require('express');
+var http = require('http');
+var path = require('path');
 
-app.get("/", (req, res)=>{
-    res.sendFile(path.resolve(__dirname + "/../client/main.html"));
+// create the express app with socket.io
+var app = express();
+var server = http.createServer(app);
+var io = require('socket.io')(server);
+
+io.on("connection", (socket)=>{
+    console.log("user sonnected");
 })
 
-app.get("/game", (req, res)=>{
-    res.sendFile(path.resolve(__dirname + "/../client/room.html"));
+app.set("view engine", "ejs");
+
+app.get("/", (req, res) =>{
+    res.render(path.resolve(__dirname + "/../client/main"));
 })
 
-app.listen(process.env.PORT || 3000, process.env.IP, function(){
-    console.log('app is running properly!...')
+server.listen(process.env.PORT || 3000, () =>{
+    console.log("app is running properly");
 })
