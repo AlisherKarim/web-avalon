@@ -6,8 +6,9 @@
     </head>
     <body>
         <ul class="container list-group" style="margin-top: 10%;">
-            <li class="list-group-item">Alisher</li>
-            <li class="list-group-item">Kasymzhan</li>
+            <% for(var i = 0; i < users.length; i++){ %>
+                <li class="list-group-item"><%=users[i].username%> <%=users[i].room%></li>
+            <% }%>
         </ul>
         
     </body>
