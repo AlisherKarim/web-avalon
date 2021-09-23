@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Avalon Game!</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    </head>
-    <body>
-        <ul class="container list-group" style="margin-top: 10%;">
-            <% for(var i = 0; i < users.length; i++){ %>
-                <li class="list-group-item"><%=users[i].username%> <%=users[i].room%></li>
-            <% }%>
-        </ul>
-        
-    </body>
-</html>
+<div class = "container" id = "room_members_list">
+    <h2 class="h2">Room Members:</h2>
+    <ul id = "room_members_ul" class="container list-group" style="margin-top: 10%;"  >
+        <% for(var i = 0; i < members.length; i++){ %>
+            <li class="list-group-item"> <%= members[i].username %></li>
+        <% }%>
+    </ul>
+</div>

@@ -12,7 +12,7 @@ app.use("/static", express.static(path.resolve(__dirname + '/../client/static/')
 
 
 var users = new Array();
-var rooms = {};
+var rooms = {}; //dictionary or map
 
 //===============Socket IO=====================
 io.on('connection', function (socket) {
@@ -33,7 +33,7 @@ io.on('connection', function (socket) {
             id: socket.id
         });
         socket.join(data.room);
-        io.in(data.room).emit('your room', rooms[data.room]);
+        io.in(data.room).emit('room', rooms[data.room]);
     })
 
     socket.on("disconnect", ()=>{
@@ -61,16 +61,15 @@ app.get("/", (req, res) =>{
 })
 
 app.get("/game", (req, res) =>{
-    res.render(("room"), {users: users});
+    res.render(("game"), {users: users});
 })
-  
+
 
 //===============POST requests==================
-// app.post("/game", (req, res) =>{
-//     users.push(req.body.username);
-//     res.redirect("/game/1234");
-// })
-
+app.post("/room", (req, res) => {
+    // console.log(req.body.members);
+    res.render('room', {members: req.body.members});
+})
 
 //===============Server LISTENS=================
 server.listen(3000, function(){

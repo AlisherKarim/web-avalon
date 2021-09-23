@@ -3,25 +3,22 @@
     <head>
         <title>Avalon Game!</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     </head>
-    <body>
-        <form class="container" style="width: 30%; margin-top: 20%;"  id="joinForm" action="#">
-            <div class="input-group flex-nowrap">
-                <span class="input-group-text" id="addon-wrapping">@</span>
-                <input required type="text" name="username" id="username" class="form-control" placeholder="Nickname" aria-label="Nickname" aria-describedby="addon-wrapping">
-            </div>
-            <div class="input-group flex-nowrap">
-                <span class="input-group-text" id="addon-wrapping">#</span>
-                <input required type="text" name="room" id="room" class="form-control" placeholder="Room Code" aria-label="Room code" aria-describedby="addon-wrapping">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-        
-        <div class = "container" id = "room_members_list" style="display: none;">
-            <h2 class="h2">Room Members:</h2>
-            <ul id = "room_members_ul" class="container list-group" style="margin-top: 10%;"  ></ul>
+    <body >
+        <div id ="main">
+            <form class="container" style="width: 30%; margin-top: 20%;"  id="joinForm" action="#">
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping">@</span>
+                    <input required type="text" name="username" id="username" class="form-control" placeholder="Nickname" aria-label="Nickname" aria-describedby="addon-wrapping">
+                </div>
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping">#</span>
+                    <input required type="text" name="room" id="room" class="form-control" placeholder="Room Code" aria-label="Room code" aria-describedby="addon-wrapping">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
         </div>
-        
 
         <script src="/socket.io/socket.io.js" > </script>
         <script src="/static/main.js"></script>
