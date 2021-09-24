@@ -1,8 +1,18 @@
 <div class = "container" id = "room_members_list">
+    <h2 class="h2">Room Code: <span><%=roomID%></span></h2>
     <h2 class="h2">Room Members:</h2>
     <ul id = "room_members_ul" class="container list-group" style="margin-top: 10%;"  >
-        <% for(var i = 0; i < members.length; i++){ %>
-            <li class="list-group-item"> <%= members[i].username %></li>
+        <% for(var i = 0; i < room.members.length; i++){ %>
+            <li class="list-group-item"> <%= room.members[i].username %></li>
         <% }%>
+        <% if(room.members.length >= 3){ %>
+            <% if(user == room.roomhost){ %>
+                <h3>The room has enough players to start the game!</h3>
+                <button type="submit" class="btn btn-success">Start!</button>
+            <% }else{ %>
+                <h3>The room has enough players to start the game!</h3>
+                <h3>Waiting the host to start it...</h3>
+            <% } %>
+        <% } %>
     </ul>
 </div>

@@ -17,7 +17,17 @@
                     <input required type="text" name="room" id="room" class="form-control" placeholder="Room Code" aria-label="Room code" aria-describedby="addon-wrapping">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
+                
             </form>
+
+            <form class="container" style="width: 30%; margin-top: 10%;" id="createform" action="#">
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="addon-wrapping">@</span>
+                    <input required type="text" name="username" id="create-username" class="form-control" placeholder="Nickname" aria-label="Nickname" aria-describedby="addon-wrapping">
+                </div>
+                <button type="submit" class="btn btn-primary">Create One!</button>
+            </form>
+
         </div>
 
         <script src="/socket.io/socket.io.js" > </script>
