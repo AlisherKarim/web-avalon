@@ -24,6 +24,7 @@ var rooms = {}; //dictionary or map
 
 rooms[i] is a list of users in ith room
 rooms[i] = {
+    id: String, 6 digits
     roomhost: String, socket-id of the person who created it
     members: List, users in this room
 }
@@ -37,6 +38,7 @@ io.on('connection', function (socket) {
 
     socket.on("create room", (data) => {
         rooms[data.room] = {
+            id: data.room,
             roomhost: socket.id,
             members: []
         };
@@ -52,7 +54,7 @@ io.on('connection', function (socket) {
             id: data.room
         });
         socket.join(data.room);
-        io.in(data.room).emit('room', {roomID: data.room, room: rooms[data.room]});
+        io.in(data.room).emit('room', {room: rooms[data.room]});
     })
 
     socket.on("join room", (data)=>{
@@ -72,7 +74,7 @@ io.on('connection', function (socket) {
             id: socket.id
         });
         socket.join(data.room);
-        io.in(data.room).emit('room', {roomID: data.room, room: rooms[data.room]});
+        io.in(data.room).emit('room', {room: rooms[data.room]});
     })
 
     socket.on("disconnect", ()=>{
@@ -85,11 +87,12 @@ io.on('connection', function (socket) {
         });
         //we have to delete the user from the room if the user existed in some specific room
         if(currentUser){
+            //todo: check if the user is the host of the room
             console.log("user", currentUser.username, "disconnected from his room", currentUser.room);
             rooms[currentUser.room].members = rooms[currentUser.room].members.filter((user) =>{
                 return user.id !== socket.id;
             });
-            io.in(currentUser.room).emit('room', {room: rooms[currentUser.room], roomID: currentUser.room});
+            io.in(currentUser.room).emit('room', {room: rooms[currentUser.room]});
         }
     })
 })
@@ -108,7 +111,7 @@ app.get("/game", (req, res) =>{
 //===============POST requests==================
 app.post("/room", (req, res) => {
     // console.log(req.body);
-    res.render('room', {room: req.body.room, roomID: req.body.roomID, user: req.body.user});
+    res.render('room', {room: req.body.room, user: req.body.user});
 })
 
 //===============Server LISTENS=================

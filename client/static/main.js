@@ -26,9 +26,9 @@ createForm.addEventListener('submit', (e)=>{
 socket.on('room', (data) => { //refreshes the room page for each member
     /*
     data = {
-        roomID, room (object from index.js)
+        room (object from index.js)
     }
     */
     // console.log(socket.id);
-    $("#main").load('room', {user: socket.id, room: data.room, roomID: data.roomID}); //.load(route, json_data) makes a post request to /route
+    $("#main").load('room', {user: socket.id, room: data.room}); //.load(route, json_data) makes a post request to /route
 })
