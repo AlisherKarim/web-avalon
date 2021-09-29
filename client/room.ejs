@@ -1,18 +1,52 @@
+<!-- This file receives {user: socket_id, room: room_object} from main.js
+     
+    room_object = {
+        id: String, 6 digits
+        roomhost: String, socket-id of the person who created it
+        members: List[Object], users in this room (refer below)
+        roundsDistribution: List[int], number of members going for a round
+        spiesCount: int, number of spies
+    }
+-->
+
 <div class = "container" id = "room_members_list">
     <h2 class="h2">Room Code: <span><%=room.id%></span></h2>
     <h2 class="h2">Room Members:</h2>
     <ul id = "room_members_ul" class="container list-group" style="margin-top: 10%;"  >
-        <% for(var i = 0; i < room.members.length; i++){ %>
+        <% for(var i = 0; i < room.members.length; i++) { %>
             <li class="list-group-item"> <%= room.members[i].username %></li>
-        <% }%>
-        <% if(room.members.length >= 3){ %>
-            <% if(user == room.roomhost){ %>
-                <h3>The room has enough players to start the game!</h3>
-                <button type="submit" class="btn btn-success">Start!</button>
-            <% }else{ %>
-                <h3>The room has enough players to start the game!</h3>
-                <h3>Waiting the host to start it...</h3>
+        <% } %>
+
+        <!-- if not enough players  -->
+        <% if (room.members.length < 5) { %>
+            <% if(user == room.roomhost) { %>
+                <h3>Not enough players to start the game!</h3>
+            <% } else { %>
+                <h3>Waiting for the other players</h3>
+            <% } %>
+        <!-- if enough amount of players  -->
+        <% } else { %>
+            <% if(user == room.roomhost) { %>
+                <h3>You have enough players to start the game!</h3>
+                <form id="start_the_game" action="#">
+                    <button type="submit" class="btn btn-success">Start!</button>
+                </form>
+
+                <script>
+                    var startTheGame = document.getElementById("start_the_game");
+                    startTheGame.addEventListener("submit", (e) => {
+                        console.log("the game started!")
+                        e.preventDefault(e);
+                        
+                        socket.emit("start")
+                    })
+                </script>
+                
+            <% } else { %>
+                <h3>Waiting for the host to start the game!</h3>
             <% } %>
         <% } %>
+
     </ul>
+    
 </div>
