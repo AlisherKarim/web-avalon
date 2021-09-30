@@ -1,0 +1,29 @@
+<!-- This file receives {id: socketID, room: room_object} from main.js  
+    room_object = {
+        id: String, 6 digits
+        roomhost: String, socket-id of the person who created it
+        members: List[Object], users in this room (refer below)
+        roundsDistribution: List[int], number of members going for a round
+        spiesCount: int, number of spies
+    }
+-->
+
+<div class="container text-center" style="margin-top: 10%;">
+    <% for (var i = 0; i < room.members.length; i++) { %>
+        <% if (room.members[i].id == id) { %>
+            <% if (room.members[i].role == "true") { %>
+                <h3 class="h3">You are a spy!</h3>
+                <h4 class="h4">Other spies are:</h4>
+                <ul class="list-group list-group-flush container" style="width: fit-content; margin-top: 2%;">
+                <% for (var j = 0; j < room.members[i].friends.length; j++) { %>
+                    <li class="list-group-item" style="border: 0ch;"><%= room.members[i].friends[j] %></li>
+                <% } %>
+                </ul>
+            <% } else {%>
+                <h3 class="h3">You are a part of the Resistance!</h3>
+            <% } %>
+        <% } %>
+    <% } %>
+
+    <!-- todo: add a timer to start another code simultaneously with other players  -->
+</div>
