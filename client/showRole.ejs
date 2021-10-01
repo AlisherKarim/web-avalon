@@ -1,4 +1,4 @@
-<!-- This file receives {id: socketID, room: room_object} from main.js  
+<!-- This file receives {id: socketID, room: room_object} from client.js  
     room_object = {
         id: String, 6 digits
         roomhost: String, socket-id of the person who created it
@@ -24,6 +24,22 @@
             <% } %>
         <% } %>
     <% } %>
+    <h5 id="count_down"class="h5">Please, wait</h5>
 
-    <!-- todo: add a timer to start another code simultaneously with other players  -->
+    <script>
+        var time = 5, intervalID = null;
+        function countDown() {
+            console.log("countdown " + time);
+            time--;
+            if (document.getElementById("count_down") != null) {
+                document.getElementById("count_down").innerHTML = "The game starts in " + time;
+            }
+            if (time == 0) {
+                clearInterval(intervalID);
+                socket.emit("showMain");
+            }
+        }
+        intervalID = setInterval(countDown, 1000);
+        
+    </script>
 </div>
