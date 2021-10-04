@@ -2,12 +2,12 @@
     <% if (room.members[room.leaderIndex].id.localeCompare(id) === 0) { %>
         <h4 class="h4 text-center">You are the mission leader</h5>
     <% } else { %>
-        <h4 class="h4 text-center"><%= room.members[room.leaderIndex].username %> is the mission leader</h5>
+        <h4 class="h4 text-center"><span class="text-primary"><%= room.members[room.leaderIndex].username %></span> is the mission leader</h5>
     <% } %>
     <ul class="list-group list-group-horizontal justify-content-center" style="margin-top: 3%;">
         <% for(var i = 1; i <= 5; i++){ %>
             <% if (room.currentRound == (i-1)) {%>
-                <li id="round1" class="bg-info list-group-item">Round <%= i %></li>
+                <li id="round1" class="bg-info list-group-item text-white">Round <%= i %></li>
             <% } else {%>
                 <li id="round1" class="list-group-item">Round <%= i %></li>
             <% }%>    
@@ -24,14 +24,14 @@
         <ul class="list-group container" style="width: fit-content;">
             <% if (room.members[room.leaderIndex].id.localeCompare(id) === 0) { %>
                 <% for (let i = 0; i < room.members.length; i++) { %>
-                    <li class="list-group-item myCheckBoxes">
+                    <li class="list-group-item myCheckBoxes text-primary">
                         <input name="selectPlayer" value=<%= room.members[i].username %> class="form-check-input me-1 selectedPlayer" type="checkbox" aria-label="...">
                         <%= room.members[i].username %>
                     </li>
                 <% } %>
             <% } else { %>
                 <% for (let i = 0; i < room.members.length; i++) { %>
-                    <li class="list-group-item">
+                    <li class="list-group-item text-primary">
                         <%= room.members[i].username %>
                     </li>
                 <% } %>

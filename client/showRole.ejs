@@ -12,15 +12,15 @@
     <% for (var i = 0; i < room.members.length; i++) { %>
         <% if (room.members[i].id == id) { %>
             <% if (room.members[i].role == "true") { %>
-                <h3 class="h3">You are a spy!</h3>
+                <h3 class="h3">You are a <b>spy</b>!</h3>
                 <h4 class="h4">Other spies are:</h4>
                 <ul class="list-group list-group-flush container" style="width: fit-content; margin-top: 2%;">
                 <% for (var j = 0; j < room.members[i].friends.length; j++) { %>
-                    <li class="list-group-item" style="border: 0ch;"><%= room.members[i].friends[j] %></li>
+                    <li class="list-group-item text-primary" style="border: 0ch;"><%= room.members[i].friends[j] %></li>
                 <% } %>
                 </ul>
             <% } else {%>
-                <h3 class="h3">You are a part of the Resistance!</h3>
+                <h3 class="h3">You are a part of the <b>Resistance</b>!</h3>
             <% } %>
         <% } %>
     <% } %>
