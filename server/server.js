@@ -93,13 +93,23 @@ io.on('connection', function (socket) {
         console.log("joining the room=" + data.room)
         if(!(data.room in allRooms)){
             //todo: implement notification of non-existing room
+            socket.emit('alert room', {message: "There is no room with the given room-code!"});
             console.log("join room event for non-existing room!");
-            exit();
+            // exit();
+            return;
         }
         else if (allRooms[data.room].members.length > 10) {
             //todo: implement notification of full room
+            socket.emit('alert room', {message: "The room is full!"});
             console.log("join room event for a full room");
-            exit();
+            return;
+        }
+        if(allRooms[data.room].members.find(user => {
+            return user.username == data.username;
+        })){
+            socket.emit('alert room', {message: "The username is already taken in the room!"});
+            console.log("The username is already taken in the room");
+            return;
         }
         allUsers.push(
             {
