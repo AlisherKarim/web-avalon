@@ -5,36 +5,13 @@
         <h4 class="h4 text-center"><%= room.members[room.leaderIndex].username %> is the mission leader</h5>
     <% } %>
     <ul class="list-group list-group-horizontal justify-content-center" style="margin-top: 3%;">
-        <% if (room.currentRound == 0) { %>
-            <li id="round1" class="list-group-item">Round 1*</li>
-            <li id="round2" class="list-group-item">Round 2</li>
-            <li id="round3" class="list-group-item">Round 3</li>
-            <li id="round4" class="list-group-item">Round 4</li>
-            <li id="round5" class="list-group-item">Round 5</li>
-        <% } else if (room.currentRound == 1) { %>
-            <li id="round1" class="list-group-item">Round 1</li>
-            <li id="round2" class="list-group-item">Round 2*</li>
-            <li id="round3" class="list-group-item">Round 3</li>
-            <li id="round4" class="list-group-item">Round 4</li>
-            <li id="round5" class="list-group-item">Round 5</li>
-        <% } else if (room.currentRound == 2) { %>
-            <li id="round1" class="list-group-item">Round 1</li>
-            <li id="round2" class="list-group-item">Round 2</li>
-            <li id="round3" class="list-group-item">Round 3*</li>
-            <li id="round4" class="list-group-item">Round 4</li>
-            <li id="round5" class="list-group-item">Round 5</li>
-        <% } else if (room.currentRound == 3) { %>
-            <li id="round1" class="list-group-item">Round 1</li>
-            <li id="round2" class="list-group-item">Round 2</li>
-            <li id="round3" class="list-group-item">Round 3</li>
-            <li id="round4" class="list-group-item">Round 4*</li>
-            <li id="round5" class="list-group-item">Round 5</li>
-        <% } else { %>
-            <li id="round1" class="list-group-item">Round 1</li>
-            <li id="round2" class="list-group-item">Round 2</li>
-            <li id="round3" class="list-group-item">Round 3</li>
-            <li id="round4" class="list-group-item">Round 4</li>
-            <li id="round5" class="list-group-item">Round 5*</li>
+        <%room.currentRound-1%>
+        <% for(var i = 1; i <= 5; i++){ %>
+            <% if (room.currentRound == (i-1)) {%>
+                <li id="round1" class="bg-info list-group-item">Round <%= i %></li>
+            <% } else {%>
+                <li id="round1" class="list-group-item">Round <%= i %></li>
+            <% }%>    
         <% } %>
     </ul>
 
