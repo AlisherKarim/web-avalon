@@ -66,7 +66,7 @@
                         var checkBoxes = $("input[name='selectPlayer']:checked");
                         var list = [];
                         for (let i = 0; i < checkBoxes.length; i++) {
-                            list[i] = checkBoxes[i].value;
+                            list.push(checkBoxes[i].value);
                         }
                         socket.emit("propose", {players: list});
                     }

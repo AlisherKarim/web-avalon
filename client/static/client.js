@@ -11,8 +11,6 @@ socket.on('room', (data) => { //refreshes the room page for each member
    $("#home").load('room', {user: socket.id, room: data.room}); //.load(route, json_data) makes a post request to /route
 })
 
-
-
 socket.on("gameStart", (data) => {
     /**
      * data = {
@@ -31,4 +29,14 @@ socket.on("showMain", (data) => {
      * from index.js
      */
     $("#home").load("showMain", {id: socket.id, room: data.room});
+})
+
+socket.on("proposePhase", (data) => {
+    /**
+     * data = {
+     *  room: allRooms[i]
+     * }
+     * from index.js
+     */
+    $("#home").load("proposePhase", {id: socket.id, room: data.room});
 })

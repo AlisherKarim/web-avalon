@@ -45,6 +45,7 @@ allRooms[i] = {
     roundsDistribution: List[int], number of members going for a round
     spiesCount: int, number of spies
     leaderIndex: int, index of current leader
+    currentRound: int, index of current round
 }
 
 allRooms[i].members[j] = {
@@ -104,9 +105,9 @@ io.on('connection', function (socket) {
             console.log("join room event for a full room");
             return;
         }
-        if(allRooms[data.room].members.find(user => {
+        if (allRooms[data.room].members.find(user => {
             return user.username == data.username;
-        })){
+        })) {
             socket.emit('alert room', {message: "The username is already taken in the room!"});
             console.log("The username is already taken in the room");
             return;
@@ -123,7 +124,8 @@ io.on('connection', function (socket) {
             username: data.username,
             id: socket.id,
             role: false, // role = true -> spy, role = false -> resistance
-            friends: [] //List[String], list of names of people with the same role
+            friends: [], //List[String], list of names of people with the same role
+            proposed: false //to indicate if this user is proposed for a round or not
         });
 
         socket.join(data.room);
@@ -236,6 +238,12 @@ io.on('connection', function (socket) {
             console.log("Room not found error!")
             exit(-1);
         }
+
+        // Each time round is finished, we have to nullify proposed
+        allRooms[roomID].members.forEach(member => {
+            member.proposed = false;
+        });
+
         io.in(roomID).emit("showMain", {room: allRooms[roomID]});
     })
 
@@ -258,7 +266,13 @@ io.on('connection', function (socket) {
             exit(-1);
         }
 
-        console.log(data);
+        allRooms[roomID].members.forEach(member => {
+            if (data.players.includes(member.username)) {
+                member.proposed = true;
+            }
+        })
+
+        io.in(roomID).emit("proposePhase", {room: allRooms[roomID]});
     })
 
     socket.on("disconnect", () => {
@@ -306,6 +320,11 @@ app.post("/showRole", (req, res) => {
 app.post("/showMain", (req, res) => {
     res.render("mainPhase_regular", {id: req.body.id, room: req.body.room});
 })
+
+app.post("/proposePhase", (req, res) => {
+    res.render("proposePhase", {id: req.body.id, room: req.body.room});
+})
+
 
 //===============Server LISTENS=================
 server.listen(3000, function(){
