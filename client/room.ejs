@@ -28,7 +28,7 @@
     <% } else { %>
         <% if(user == room.roomhost) { %>
             <h3 class="h3 text-center">You have enough players to start the game!</h3>
-            <form id="start_the_game" action="#">
+            <form id="start_the_game" action="#" class="text-center">
                 <button type="submit" class="btn btn-success">Start!</button>
             </form>
 
@@ -38,7 +38,7 @@
                     console.log("the game started!")
                     e.preventDefault(e);
                     
-                    socket.emit("start")
+                    socket.emit("start");
                 })
             </script>
             

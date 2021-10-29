@@ -31,7 +31,7 @@ function shuffleArray(array) {
 }
 
 //===============small descriptions of user and room "objects"===========
-/*user = {
+/*allUsers[i] = {
     id: String, socketID,
     username: String, nickName,
     room: String, room id the user is in,
@@ -46,13 +46,21 @@ allRooms[i] = {
     spiesCount: int, number of spies
     leaderIndex: int, index of current leader
     currentRound: int, index of current round
+    acceptedVotes: int, number of players who accepted the proposal
+    declinedVotes: int, number of players who declined the proposal
+    captainSwaps: int, number of captain swaps, if reaches 5, spies win the game
+    history: List[int], keeps history of the game, 1 - resistance won, 0 - not yet reached, -1 - spies won
+    success: int,  number of succes votes
+    fail: int, number of fail votes
 }
+
 
 allRooms[i].members[j] = {
     username: String, name of a player
     id: String, socketID
-    role: boolean, true if a player is spy, false otherwise
+    isSpy: boolean, true if a player is spy, false otherwise
     friends: List[String], list of names of players with the same role
+    proposed: boolean //to indicate if this user is proposed for a round or not
 }
 
 */
@@ -70,7 +78,13 @@ io.on('connection', function (socket) {
             roundsDistribution: [],
             spiesCount: 0,
             leaderIndex: 0,
-            currentRound: 0
+            currentRound: 0,
+            acceptedVotes: 0,
+            declinedVotes: 0,
+            captainSwaps: 0,
+            history: [0, 0, 0, 0, 0],
+            success: 0,
+            fail: 0
         };
         allUsers.push(
             {
@@ -82,8 +96,9 @@ io.on('connection', function (socket) {
         allRooms[data.room].members.push({
             username: data.username,
             id: socket.id,
-            role: false, // role = true -> spy, role = false -> resistance
-            friends: [] //List[String], list of names of people with the same role
+            isSpy: false, // isSpy = true -> spy, isSpy = false -> resistance
+            friends: [], //List[String], list of names of people with the same role
+            proposed: false
         });
         socket.join(data.room);
 
@@ -93,14 +108,12 @@ io.on('connection', function (socket) {
     socket.on("join room", (data) => {
         console.log("joining the room=" + data.room)
         if(!(data.room in allRooms)){
-            //todo: implement notification of non-existing room
             socket.emit('alert room', {message: "There is no room with the given room-code!"});
             console.log("join room event for non-existing room!");
             // exit();
             return;
         }
         else if (allRooms[data.room].members.length > 10) {
-            //todo: implement notification of full room
             socket.emit('alert room', {message: "The room is full!"});
             console.log("join room event for a full room");
             return;
@@ -123,7 +136,7 @@ io.on('connection', function (socket) {
         allRooms[data.room].members.push({
             username: data.username,
             id: socket.id,
-            role: false, // role = true -> spy, role = false -> resistance
+            isSpy: false, // isSpy = true -> spy, isSpy = false -> resistance
             friends: [], //List[String], list of names of people with the same role
             proposed: false //to indicate if this user is proposed for a round or not
         });
@@ -133,7 +146,6 @@ io.on('connection', function (socket) {
     })
 
     socket.on("start", () => {
-        console.log("the game started! <index.js>")
         var roomID = "", found = false;
         for (var i = 0; i < allUsers.length; i++) {
             if (allUsers[i].id.localeCompare(socket.id) == 0) {
@@ -196,23 +208,23 @@ io.on('connection', function (socket) {
         var i = 0, randIndex;
         while (i < allRooms[roomID].spiesCount) {
             randIndex = getRandomInt(playerCount);
-            if (!allRooms[roomID].members[randIndex].role) { //if player is not a spy
-                allRooms[roomID].members[randIndex].role = true; //we make him a spy
+            if (!allRooms[roomID].members[randIndex].isSpy) { //if player is not a spy
+                allRooms[roomID].members[randIndex].isSpy = true; //we make him a spy
                 i++;
             }
         }
         //Identifying allies
         for (var i = 0; i < allRooms[roomID].members.length; i++) {
-            if (allRooms[roomID].members[i].role == true) { //if a player is spy
+            if (allRooms[roomID].members[i].isSpy == true) { //if a player is spy
                 for (var j = 0; j < allRooms[roomID].members.length; j++) {
-                    if (allRooms[roomID].members[j].role == true && i != j) {
+                    if (allRooms[roomID].members[j].isSpy == true && i != j) {
                         allRooms[roomID].members[i].friends.push(allRooms[roomID].members[j].username);
                     }
                 }
             }
             else {
                 for (var j = 0; j < allRooms[roomID].members.length; j++) {
-                    if (allRooms[roomID].members[j].role == false && i != j) {
+                    if (allRooms[roomID].members[j].isSpy == false && i != j) {
                         allRooms[roomID].members[i].friends.push(allRooms[roomID].members[j].username);
                     }
                 }
@@ -239,10 +251,45 @@ io.on('connection', function (socket) {
             exit(-1);
         }
 
+        if (allRooms[roomID].captainSwaps == 5) {
+            //end game
+            io.in(roomID).emit("results", {win: true});
+            return;
+        }
+
+        var spyRounds = 0, resistanceRounds = 0;
+        for (var i = 0; i < 5; i++) {
+            if (allRooms[roomID].history[i] > 0) {
+                resistanceRounds++;
+            }
+            else if (allRooms[roomID].history[i] < 0) {
+                spyRounds++;
+            }
+        }
+        
+        if (spyRounds == 3) {
+            //spies won
+            io.in(roomID).emit("results", {win: true});
+            return;
+        }
+
+        if (resistanceRounds == 3) {
+            // resistance won
+            io.in(roomID).emit("results", {win: false});
+            return;
+        }
+
         // Each time round is finished, we have to nullify proposed
         allRooms[roomID].members.forEach(member => {
             member.proposed = false;
         });
+
+        // Nullifying votes
+        allRooms[roomID].acceptedVotes = 0;
+        allRooms[roomID].declinedVotes = 0;
+
+        allRooms[roomID].success = 0;
+        allRooms[roomID].fail = 0;
 
         io.in(roomID).emit("showMain", {room: allRooms[roomID]});
     })
@@ -250,7 +297,7 @@ io.on('connection', function (socket) {
     socket.on("propose", (data) => {
         /**
          * data = {
-         *    list[i] = String //name of a player
+         *    players[i] = String //name of a player
          * }
          */
         var roomID = "", found = false;
@@ -275,15 +322,138 @@ io.on('connection', function (socket) {
         io.in(roomID).emit("proposePhase", {room: allRooms[roomID]});
     })
 
+    socket.on("acceptDecline", (vote) => {
+        /**
+         * vote = {
+         *      isAccepted = Boolean // vote of a player
+         * }
+         */
+        var roomID = "", found = false;
+        for (var i = 0; i < allUsers.length; i++) {
+            if (allUsers[i].id.localeCompare(socket.id) == 0) {
+                roomID = allUsers[i].room;
+                found = true;
+                break;
+            }
+        }
+        if (!found) { // if room is not found
+            console.log("Room not found error!")
+            exit(-1);
+        }
+
+
+        
+        if (vote.isAccepted) {
+            allRooms[roomID].acceptedVotes += 1;
+        }
+        else {
+            allRooms[roomID].declinedVotes += 1;
+        }
+
+        if(allRooms[roomID].acceptedVotes + allRooms[roomID].declinedVotes == allRooms[roomID].members.length){
+            if (allRooms[roomID].acceptedVotes > allRooms[roomID].declinedVotes) {
+                // passes to the next phase (votePhase)
+                if (allRooms[roomID].leaderIndex + 1 == allRooms[roomID].members.length) {
+                    allRooms[roomID].leaderIndex = 0;
+                }
+                else {
+                    allRooms[roomID].leaderIndex++;
+                }
+                allRooms[roomID].currentRound++;
+
+                io.in(roomID).emit("votingPhase", {room : allRooms[roomID]})
+            }
+            else {
+                // repeats vote phases
+                if (allRooms[roomID].leaderIndex + 1 == allRooms[roomID].members.length) {
+                    allRooms[roomID].leaderIndex = 0;
+                }
+                else {
+                    allRooms[roomID].leaderIndex++;
+                }
+                allRooms[roomID].captainSwaps++;
+
+                io.in(roomID).emit("loadMain", {room: allRooms[roomID]});
+            }
+        }
+    })
+
+    socket.on("decision", (decision) => {
+        /**
+         * decision = {
+         *      isSuccess = Boolean // decision of a player
+         *      id = socket.id //client id
+         * }
+         */
+        var roomID = "", found = false;
+        for (var i = 0; i < allUsers.length; i++) {
+            if (allUsers[i].id.localeCompare(socket.id) == 0) {
+                roomID = allUsers[i].room;
+                found = true;
+                break;
+            }
+        }
+        if (!found) { // if room is not found
+            console.log("Room not found error!")
+            exit(-1);
+        }
+
+        // if member is a spy, his vote is always success.
+        allRooms[roomID].members.forEach(member => {
+            if (member.id == decision.id && !member.isSpy) {
+                decision.isSuccess = true;
+            }
+        })
+
+        if (decision.isSuccess) {
+            allRooms[roomID].success++;
+        }
+        else {
+            allRooms[roomID].fail++;
+        }
+
+        if((allRooms[roomID].success + allRooms[roomID].fail) == allRooms[roomID].roundsDistribution[allRooms[roomID].currentRound - 1]) {
+            if(allRooms[roomID].currentRound == 3 && allRooms[roomID].members.length >= 7) {
+                if (allRooms[roomID].fail >= 2) {
+                    //spies won the round
+                    allRooms[roomID].history[allRooms[roomID].currentRound - 1] = -allRooms[roomID].fail;
+                }
+                else {
+                    //resistance won the round
+                    allRooms[roomID].history[allRooms[roomID].currentRound - 1] = allRooms[roomID].success;
+                }
+            }
+            else{
+                if (allRooms[roomID].fail >= 1) {
+                    //spies won the round
+                    allRooms[roomID].history[allRooms[roomID].currentRound - 1] = -allRooms[roomID].fail;
+                }
+                else {
+                    //resistance won the round
+                    allRooms[roomID].history[allRooms[roomID].currentRound - 1] = allRooms[roomID].success;
+                }
+            } 
+
+            io.in(roomID).emit("loadMain", ({room: allRooms[roomID]}))
+        }
+    })
+
     socket.on("disconnect", () => {
         //todo: implement allRooms[i].members list filtering
         console.log("socket/client disconnected!");
         var currentUser = allUsers.find((user) => {
             return user.id === socket.id;
         })
-        allUsers = allUsers.filter((user)=>{ 
-            return user.id !== socket.id;
-        });
+        var roomID = currentUser.room;
+        allUsers.forEach(user => {
+            var index = allUsers.indexOf(user);
+            for (var i = 0; i < allRooms[roomID].members.length; i++) {
+                if (user.id == allRooms[roomID].members[i]) {
+                    allUsers.splice(index, 1);
+                    break;
+                }
+            }
+        })
         //we have to delete the user from the room if the user existed in some specific room
         if (currentUser) {
             //todo: check if the user is the host of the room
@@ -325,6 +495,18 @@ app.post("/proposePhase", (req, res) => {
     res.render("proposePhase", {id: req.body.id, room: req.body.room});
 })
 
+
+app.post("/votingPhaseOthers", (req, res) => {
+    res.render("votePhase_others", {id: req.body.id, room: req.body.room})
+})
+
+app.post("/votingPhaseVoters", (req, res) => {
+    res.render("votePhase_voters", {id: req.body.id, room: req.body.room})
+})
+
+app.post("/results", (req, res) => {
+    res.render("results", {win : req.body.win})
+})
 
 //===============Server LISTENS=================
 server.listen(3000, function(){

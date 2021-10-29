@@ -4,13 +4,38 @@
     <% } else { %>
         <h4 class="h4 text-center"><span class="text-primary"><%= room.members[room.leaderIndex].username %></span> is the mission leader</h5>
     <% } %>
+    <div class="container text-center">
+        <% for (var i = 0; i < room.members.length; i++) { %>
+            <% if (room.members[i].id.localeCompare(id) === 0) { %>
+                <h5 class="h5">Your role is <%= room.members[i].isSpy == 'true' ? "Spy" : "Resistance" %></h5>
+                <% if (room.members[i].isSpy == 'true') { %>
+                    <h6 class="h6">Other spies are:</h6>
+                    <% for (var j = 0; j < room.members[i].friends.length; j++) { %>
+                        <h6 class="h6"><%= room.members[i].friends[j] %></h6>
+                    <% } %>
+                <% } %>
+            <% } %>
+        <% } %>
+    </div>
     <ul class="list-group list-group-horizontal justify-content-center" style="margin-top: 3%;">
-        <% for(var i = 1; i <= 5; i++){ %>
-            <% if (room.currentRound == (i-1)) {%>
+        <% for(var i = 1; i <= 5; i++) { %>
+            <% if (room.currentRound == (i - 1)) { %>
                 <li id="round1" class="bg-info list-group-item text-white">Round <%= i %></li>
             <% } else {%>
-                <li id="round1" class="list-group-item">Round <%= i %></li>
-            <% }%>    
+                <li id="round1" class="list-group-item">Round <%= i %>
+                    <% if(room.currentRound > (i - 1)) { %> 
+                        <% if(room.history[i - 1] < 0) {%>
+                            <% if (-room.history[i - 1] == 1) { %>
+                                <span class="badge bg-danger rounded-pill"><%= -room.history[i - 1] %> fail</span>
+                            <% } else { %>
+                                <span class="badge bg-danger rounded-pill"><%= -room.history[i - 1] %> fails</span>
+                            <% } %>
+                        <% } else { %>
+                            <span class="badge bg-success rounded-pill">Success</span>
+                        <% } %>
+                    <% } %>
+                </li>
+            <% }%>
         <% } %>
     </ul>
 
