@@ -1,0 +1,24 @@
+
+<div class="container" style="margin-top: 10%;">
+    <h1 class="h1 text-center">
+        Please, make your decision bro!
+    </h1>
+    
+    <div class="container text-center" style="margin-top: 5%;">
+        <button type="button" id="success"  class="btn btn-success btn-lg">Success</button>
+        <button type="button" id="fail" class="btn btn-danger btn-lg">Fail</button>
+        <script>
+            $("#success").on("click", function(){
+                console.log("CLicked");
+                socket.emit("decision", ({isSuccess: true, id: socket.id}));
+                document.getElementById("success").disabled = true;
+                document.getElementById("fail").disabled = true;
+            })
+            $("#fail").on("click", function(){
+                socket.emit("decision", ({isSuccess: false, id: socket.id}));
+                document.getElementById("success").disabled = true;
+                document.getElementById("fail").disabled = true;
+            })
+        </script>
+    </div>
+</div>

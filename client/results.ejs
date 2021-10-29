@@ -1,0 +1,18 @@
+<div class="container" style="margin-top: 10%;">
+    <h1 class="h1 text-center">
+        <% if(win == 'true'){ %>
+            bro brattar 
+        <% } else {%>
+            brat brolar
+        <% }%>    
+        Utty!
+    </h1>
+
+    <button id="newGameButton" class="btn btn-success container text-center">New game</button>
+
+    <script>
+        $("#newGameButton").on("click", function() {
+            window.location.reload(true);
+        })
+    </script>
+</div>
