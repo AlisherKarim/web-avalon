@@ -444,6 +444,7 @@ io.on('connection', function (socket) {
         var currentUser = allUsers.find((user) => {
             return user.id === socket.id;
         })
+        //this if is not necessary 
         if(currentUser){
             allUsers = allUsers.filter((user) => {
                 return user.id !== socket.id;
@@ -456,6 +457,9 @@ io.on('connection', function (socket) {
             allRooms[currentUser.room].members = allRooms[currentUser.room].members.filter((user) =>{
                 return user.id !== socket.id;
             });
+            if(allRooms[currentUser.room].roomhost === currentUser.id && allRooms[currentUser.room].members.length > 0){
+                allRooms[currentUser.room].roomhost = allRooms[currentUser.room].members[0].id;
+            }
             io.in(currentUser.room).emit('room', {room: allRooms[currentUser.room]});
         }
     })
