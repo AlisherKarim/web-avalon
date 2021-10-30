@@ -439,36 +439,34 @@ io.on('connection', function (socket) {
     })
 
     socket.on("disconnect", () => {
-        //todo: implement allRooms[i].members list filtering
-        console.log("socket/client disconnected!");
         var currentUser = allUsers.find((user) => {
             return user.id === socket.id;
-        })
-        var roomID = currentUser.room;
-        allUsers.forEach(user => {
-            var index = allUsers.indexOf(user);
-            for (var i = 0; i < allRooms[roomID].members.length; i++) {
-                if (user.id == allRooms[roomID].members[i]) {
-                    allUsers.splice(index, 1);
-                    break;
-                }
-            }
         })
         //we have to delete the user from the room if the user existed in some specific room
         if (currentUser) {
             //todo: check if the user is the host of the room
-            console.log("user", currentUser.username, "disconnected from his room", currentUser.room);
-            allRooms[currentUser.room].members = allRooms[currentUser.room].members.filter((user) =>{
-                return user.id !== socket.id;
-            });
-            io.in(currentUser.room).emit('room', {room: allRooms[currentUser.room]});
+            
+            var roomID = currentUser.room;
+            allUsers.forEach(user => {
+                var index = allUsers.indexOf(user);
+                for (var i = 0; i < allRooms[roomID].members.length; i++) {
+                    if (user.id == allRooms[roomID].members[i]) {
+                        allUsers = allUsers.splice(index, 1);
+                        break;
+                    }
+                }
+            })
+
+            console.log("allUsers: ", allUsers);
+
+            io.in(roomID).emit('restart', {room: allRooms[roomID]});
         }
     })
 })
 
 
 //===============GET requests==================
-app.get("/", (req, res) =>{
+app.get("/", (req, res) => {
     res.render("main");
 })
 

@@ -1,5 +1,9 @@
 const socket = io();
 
+socket.on("restart", () => {
+    document.location.reload();
+    socket.emit("/");
+})
 
 socket.on('room', (data) => { //refreshes the room page for each member
     /*
