@@ -444,16 +444,11 @@ io.on('connection', function (socket) {
         var currentUser = allUsers.find((user) => {
             return user.id === socket.id;
         })
-        var roomID = currentUser.room;
-        allUsers.forEach(user => {
-            var index = allUsers.indexOf(user);
-            for (var i = 0; i < allRooms[roomID].members.length; i++) {
-                if (user.id == allRooms[roomID].members[i]) {
-                    allUsers.splice(index, 1);
-                    break;
-                }
-            }
-        })
+        if(currentUser){
+            allUsers = allUsers.filter((user) => {
+                return user.id !== socket.id;
+            })
+        }
         //we have to delete the user from the room if the user existed in some specific room
         if (currentUser) {
             //todo: check if the user is the host of the room
@@ -509,7 +504,7 @@ app.post("/results", (req, res) => {
 })
 
 //===============Server LISTENS=================
-server.listen(3000, function(){
+server.listen(process.env.PORT || 3000, function(){
    console.log('listening on localhost:3000');
 });
 
